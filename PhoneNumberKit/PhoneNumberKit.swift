@@ -91,6 +91,45 @@ public final class PhoneNumberKit: NSObject {
 
     // MARK: Country and region code
 
+    public func examplePhoneNumber(forCountryCode countryCode: UInt64, withPhoneNumberType phoneNumberType: PhoneNumberType) -> String? {
+        guard let territoryMetadata = metadataManager.filterTerritories(byCode: countryCode)?.first else {
+            return nil
+        }
+
+        var phoneNumberMetadata: MetadataPhoneNumberDesc?
+        switch (phoneNumberType) {
+        case .fixedOrMobile:
+            phoneNumberMetadata = territoryMetadata.fixedLine ?? territoryMetadata.mobile
+        case .fixedLine:
+            phoneNumberMetadata = territoryMetadata.fixedLine
+        case .mobile:
+            phoneNumberMetadata = territoryMetadata.mobile
+        case .pager:
+            phoneNumberMetadata = territoryMetadata.pager
+        case .personalNumber:
+            phoneNumberMetadata = territoryMetadata.personalNumber
+        case .premiumRate:
+            phoneNumberMetadata = territoryMetadata.premiumRate
+        case .tollFree:
+            phoneNumberMetadata = territoryMetadata.tollFree
+        case .uan:
+            phoneNumberMetadata = territoryMetadata.uan
+        case .voicemail:
+            phoneNumberMetadata = territoryMetadata.voicemail
+        case .voip:
+            phoneNumberMetadata = territoryMetadata.voip
+        default:
+            phoneNumberMetadata = nil
+        }
+
+        guard let exampleNumber = phoneNumberMetadata?.exampleNumber,
+              let phoneNumber = try? parse(exampleNumber, withRegion: "+\(countryCode)") else {
+            return nil
+        }
+
+        return format(phoneNumber, toType: .international)
+    }
+
     /// Get a list of all the countries in the metadata database
     ///
     /// - returns: An array of ISO 639 compliant region codes.
