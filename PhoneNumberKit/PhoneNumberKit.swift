@@ -91,8 +91,9 @@ public final class PhoneNumberKit: NSObject {
 
     // MARK: Country and region code
 
-    public func examplePhoneNumber(forCountryCode countryCode: UInt64, withPhoneNumberType phoneNumberType: PhoneNumberType) -> String? {
-        guard let territoryMetadata = metadataManager.filterTerritories(byCode: countryCode)?.first else {
+    public func examplePhoneNumber(for country: String, withPhoneNumberType phoneNumberType: PhoneNumberType) -> String? {
+        guard let countryCode = countryCode(for: country),
+              let territoryMetadata = metadataManager.filterTerritories(byCode: countryCode)?.first else {
             return nil
         }
 
@@ -123,7 +124,7 @@ public final class PhoneNumberKit: NSObject {
         }
 
         guard let exampleNumber = phoneNumberMetadata?.exampleNumber,
-              let phoneNumber = try? parse(exampleNumber, withRegion: "+\(countryCode)") else {
+              let phoneNumber = try? parse(exampleNumber, withRegion: country) else {
             return nil
         }
 
